@@ -9,7 +9,7 @@
  * 4- Buzzer (Pin 3)
  * 
  */
- 
+
 #include "Ultrasonic.h"
 #include <Stepper.h>
 #include <math.h>
@@ -33,8 +33,6 @@ byte minDistDiff = 3;
 int maxDistDiff = 1000;
 int l = 0;
 int r = 0;
-
-String txt = " : ";
 
 int radar[2][round((STEPPER_ARC/STEPPER_STEPS2GO)+1)];
 int countPos = 0;
@@ -66,7 +64,7 @@ void loop()
   
   int lrDiff = (l > r)? l - r : r - l;
   
-  Serial.println(motorPos + txt + countPos + txt + l + txt + r + txt + lrDiff + txt + motorDir);
+  Serial.println(String(motorPos) + ": " + String(countPos) + ": " + String(l) + ": " + String(r) + ": " + String(lrDiff) + ": " + String(motorDir));
   
   if ( lrDiff > minDistDiff && lrDiff < maxDistDiff )
   {
