@@ -1,0 +1,32 @@
+//
+// ${workspaceRoot}: the root folder of the team
+// ${file}: the current opened file
+// ${fileBasename}: the current opened file's basename
+// ${fileDirname}: the current opened file's dirname
+// ${fileExtname}: the current opened file's extension
+// ${cwd}: the current working directory of the spawned process
+//
+{
+	"version": "0.1.0",
+	"command": "bash",
+	"isShellCommand": true,
+	"showOutput": "always",
+	"args": ["-c"],
+	"tasks": [
+		{
+			"taskName": "Verify",
+			"suppressTaskName": true,
+			"isTestCommand": true,
+			"args": ["arduino -v --verify ${file}"]
+		},{
+			"taskName": "Upload",
+			"suppressTaskName": true,
+			"isBuildCommand": true,
+			"args": ["arduino -v --upload ${file}"]
+		},{
+			"taskName": "Serial Monitor",
+			"suppressTaskName": true,
+			"args": ["cat /dev/ttyACM0"]
+		}
+	]
+}

@@ -28,6 +28,8 @@ const byte USONIC_PIN[] = {12,13};
 
 const int SERIAL_BRATE = 9600;
 
+FILE serial_stdout;
+
 // Variables;
 byte minDistDiff = 3;
 int maxDistDiff = 1000;
@@ -49,6 +51,9 @@ void setup()
   stepper.setSpeed(STEPPER_SPEED);
   Serial.begin(SERIAL_BRATE);
   pinMode(BUZZER_PIN, OUTPUT);
+  
+  fdev_setup_stream(&serial_stdout, serial_putchar, NULL, _FDEV_SETUP_WRITE);
+  stdout = &serial_stdout;
 }
 
 void loop()
@@ -64,12 +69,10 @@ void loop()
   
   int lrDiff = (l > r)? l - r : r - l;
   
-  Serial.println(String(motorPos) + ": " + String(countPos) + ": " + String(l) + ": " + String(r) + ": " + String(lrDiff) + ": " + String(motorDir));
+  printf("{\"countPos\":\"%u\",\"motorPos\":\"%u\",\"motorDir\":\"%d\",\"l\":\"%u\",\"r\":\"%u\",\"lrDiff\":\"%u\"}\n", countPos, motorPos, motorDir, l, r, lrDiff);
   
   if ( lrDiff > minDistDiff && lrDiff < maxDistDiff )
   {
-    //Serial.println(motorPos + txt + countPos + txt + l + txt + r + txt + lrDiff + txt + motorDir);
-    
     analogWrite(BUZZER_PIN, BUZZER_VOL);
     delay(lrDiff);
     digitalWrite(BUZZER_PIN, LOW);
@@ -88,6 +91,11 @@ void motorStep()
   int stepNow = STEPPER_STEPS2GO * motorDir;
   
   stepper.step(stepNow);
-  motorPos += stepNow;
   countPos += motorDir;
+  motorPos += stepNow;
+}
+
+int serial_putchar(char c, FILE* f) {
+    if (c == '\n') serial_putchar('\r', f);
+    return Serial.write(c) == 1? 0 : 1;
 }
